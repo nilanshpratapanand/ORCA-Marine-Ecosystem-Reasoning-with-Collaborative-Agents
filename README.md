@@ -24,8 +24,22 @@ this repo to your Desktop, sets up backend + frontend, and offers to start it.
 
 Backend docs: http://127.0.0.1:8000/docs · UI: http://127.0.0.1:5173
 
-By hand, or on Mac/Linux? **[SETUP.md](SETUP.md)** has every step + a
-common-errors table.
+## Quick start (Linux / macOS)
+
+```
+curl -O https://raw.githubusercontent.com/nilanshpratapanand/ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents/main/install-orca.sh
+chmod +x install-orca.sh
+./install-orca.sh
+```
+
+Installs git / python / node via your package manager (pacman / apt / dnf /
+brew), clones the repo, sets up both halves, offers to start. Later just
+`./run.sh` from the project folder.
+
+---
+
+Doing it by hand? **[SETUP.md](SETUP.md)** has every step + a common-errors
+table.
 
 ## Docs
 
