@@ -1,7 +1,11 @@
 # ORCA — Dev Setup (do this once)
 
-Follow top to bottom. Every command is its own line — **paste one at a time**
-(Windows PowerShell does not support `&&`).
+Follow top to bottom. **Paste ONE command at a time** and wait for it to finish
+(Windows PowerShell does not support `&&`, and if you paste a block it silently
+skips lines).
+
+**Do not skip a step. Do not run these in `C:\WINDOWS\system32`** — if your
+prompt says `system32`, you forgot the `cd` in step 1.
 
 ---
 
@@ -10,14 +14,15 @@ Follow top to bottom. Every command is its own line — **paste one at a time**
 | Tool | Version | Link | Note |
 |---|---|---|---|
 | Git | any | https://git-scm.com/download/win | — |
-| **Python 3.12** | **3.12.x, NOT 3.13/3.14** | https://www.python.org/downloads/release/python-3129/ | tick **"Add python.exe to PATH"** in the installer |
+| **Python 3.12** | **3.12.x — NOT 3.13 / 3.14** | https://www.python.org/downloads/release/python-3129/ | tick **"Add python.exe to PATH"** in the installer |
 | Node.js | LTS (20 or 22) | https://nodejs.org | — |
 | VS Code | any | https://code.visualstudio.com | optional |
 
-> Python 3.13+ breaks `pydantic` install (tries to compile Rust). Use **3.12**.
-> If `python` opens the Microsoft Store, use `py -3.12` everywhere instead.
+> **Why 3.12 and not newer:** on 3.13/3.14 the `pydantic` install has no
+> prebuilt file and tries to compile Rust → fails with `link.exe not found`.
+> 3.12 just works. The whole team must be on the same version.
 
-Close and reopen the terminal after installing. Check:
+Close and reopen the terminal after installing, then check all three:
 
 ```
 git --version
@@ -29,12 +34,19 @@ py -3.12 --version
 node --version
 ```
 
+`py -3.12 --version` must print `Python 3.12.x`. If it says "can't find 3.12",
+Python 3.12 isn't installed — go back and install it.
+
+> **Never type bare `python`** on Windows — it can open a "Select an app to open
+> python" popup (a broken Store alias). Use **`py -3.12`** outside a venv, and
+> plain `python` only *inside* an activated venv (there it's safe).
+
 ---
 
 ## 1. Clone the repo
 
 ```
-cd C:\Users\%USERNAME%\Desktop
+cd $HOME\Desktop
 ```
 ```
 git clone https://github.com/nilanshpratapanand/ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents.git
@@ -50,33 +62,47 @@ cd ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents
 ```
 cd backend
 ```
+
+**Create the virtual environment (do NOT skip this line):**
+
 ```
 py -3.12 -m venv venv
 ```
+
+That takes ~20 sec and creates a `venv\` folder. Now activate it:
+
 ```
 venv\Scripts\activate
 ```
 
-Your prompt should now start with `(venv)`. If activation errors in red:
+### ✅ CHECKPOINT — stop and look at your prompt
+
+It must now start with **`(venv)`**, like:
 
 ```
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+(venv) PS C:\Users\...\backend>
 ```
-Press `Y`, then run `venv\Scripts\activate` again.
+
+- **No `(venv)`?** Activation didn't work. Everything after this will fail.
+  Fix: run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` → press `Y` →
+  run `venv\Scripts\activate` again. Still nothing? You skipped
+  `py -3.12 -m venv venv` — run it.
+
+Once you see `(venv)`, continue:
 
 ```
 python -m pip install -r requirements.txt
 ```
 
-### API key (optional but do it)
+### API key (optional — app runs without it)
 
 ```
 copy .env.example .env
 ```
 
-Open `backend\.env` in Notepad, put a free Groq key after `GROQ_API_KEY=`
-(get one at https://console.groq.com/keys), save.
-Without a key the app still runs — it just uses templated answers.
+Open `backend\.env` in Notepad, paste a free Groq key after `GROQ_API_KEY=`
+(get one: https://console.groq.com/keys), save. No key = templated answers,
+still fully works.
 
 ### Run it
 
@@ -84,20 +110,22 @@ Without a key the app still runs — it just uses templated answers.
 python -m uvicorn app.main:app --reload
 ```
 
-Open http://127.0.0.1:8000/docs — try the `/query` endpoint with:
+Wait for `Application startup complete`. Open http://127.0.0.1:8000/docs,
+expand `POST /query` → "Try it out" → paste:
 
 ```json
 { "question": "Should I go fishing off Kerala today?", "role": "fisherman" }
 ```
 
-You should get JSON back with an `agent_trace`. **Leave this terminal running.**
+Execute → you get JSON back with an `agent_trace` list = backend works.
+**Leave this terminal running.**
 
 ---
 
-## 3. Frontend (React) — new terminal
+## 3. Frontend (React) — open a SECOND terminal
 
 ```
-cd C:\Users\%USERNAME%\Desktop\ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents\frontend
+cd $HOME\Desktop\ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents\frontend
 ```
 ```
 npm install
@@ -106,18 +134,22 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173 — the backend (step 2) must be running.
+Open http://127.0.0.1:5173 — the backend (step 2) must still be running in the
+other terminal.
 
 ---
 
-## 4. Daily workflow (after setup)
+## 4. Daily workflow (after the one-time setup above)
 
-Start work:
+**Start of session:**
+```
+cd $HOME\Desktop\ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents
+```
 ```
 git pull
 ```
 
-Backend (terminal 1):
+**Backend — terminal 1:**
 ```
 cd backend
 ```
@@ -127,8 +159,9 @@ venv\Scripts\activate
 ```
 python -m uvicorn app.main:app --reload
 ```
+(no `py -3.12 -m venv venv` again — the venv already exists)
 
-Frontend (terminal 2):
+**Frontend — terminal 2:**
 ```
 cd frontend
 ```
@@ -136,12 +169,12 @@ cd frontend
 npm run dev
 ```
 
-Save your work:
+**Save your work:**
 ```
 git add -A
 ```
 ```
-git commit -m "what you changed"
+git commit -m "short note on what you changed"
 ```
 ```
 git pull
@@ -150,22 +183,24 @@ git pull
 git push
 ```
 
-> Work on your own file/agent so commits don't clash. If `git pull` shows a
-> conflict, ping the group before force-anything.
+> Each person owns their own file/agent so commits don't clash. If `git pull`
+> reports a conflict, tell the group before doing anything drastic.
 
 ---
 
 ## 5. Common errors
 
-| Error | Fix |
+| What you see | Fix |
 |---|---|
-| `The token '&&' is not a valid statement separator` | You pasted two commands on one line. Paste them separately. |
-| `Could not open requirements file` | You're in the wrong folder. `cd` into `backend` first. |
-| `python` opens Microsoft Store | Use `py -3.12` instead of `python`, or turn off the alias: Settings → "Manage app execution aliases" → python.exe OFF |
-| `Building wheel for pydantic-core ... error` / `link.exe not found` | Wrong Python version. Delete `venv`, recreate with `py -3.12 -m venv venv` |
-| `venv\Scripts\activate` red error | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` → `Y` |
-| Frontend shows "Backend unreachable" | Backend terminal isn't running / crashed. Restart step 2. |
-| `git push` rejected | Run `git pull` first, resolve, then push. |
+| Prompt says `PS C:\WINDOWS\system32>` | You didn't `cd` into the project. Do step 1. |
+| `The token '&&' is not a valid statement separator` | You pasted 2+ commands on one line. Paste them one at a time. |
+| `venv\Scripts\activate` runs but **no `(venv)` appears** | venv wasn't created or policy blocked it. Run `py -3.12 -m venv venv`, then `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` → `Y`, then activate again. |
+| "Select an app to open **python**" popup | You typed bare `python` outside a venv. Close the popup. Use `py -3.12`, or activate the venv first. |
+| `Could not open requirements file` | Wrong folder — `cd backend` first, and make sure `(venv)` is showing. |
+| `Building wheel for pydantic-core ... error` / `link.exe not found` | venv was made with Python 3.13/3.14. Delete the `venv` folder, run `py -3.12 -m venv venv` again. |
+| `py -3.12` → "can't find" | Python 3.12 not installed. Step 0. |
+| Frontend page: "Backend unreachable" | Backend terminal isn't running or crashed. Restart step 2's run command. |
+| `git push` rejected (`fetch first`) | `git pull` first, fix any conflict, then `git push`. |
 
 ---
 
@@ -176,13 +211,13 @@ backend/app/
   main.py            FastAPI entry — POST /query, GET /llm-status
   schemas.py         request/response shapes
   agents/
-    orchestrator.py  runs the agents in order, builds the trace
-    language.py      detect query language, translate the answer back
-    time_context.py  "today / kal / tomorrow morning" -> forecast day
-    data_retrieval.py resolve region, pull the numbers (7 seeded regions)
+    orchestrator.py    runs the agents in order, builds the trace
+    language.py        detect query language, translate the answer back
+    time_context.py    "today / kal / tomorrow morning" -> forecast day
+    data_retrieval.py  resolve region, pull the numbers (7 seeded regions)
     domain_advisory.py fisherman / researcher / disaster_ops framing + evidence
-    reasoning.py     turn it into one readable answer (LLM or template)
-    llm.py           provider cascade: Groq/Qwen + free-tier fallbacks
+    reasoning.py       turn it into one readable answer (LLM or template)
+    llm.py             provider cascade: Groq/Qwen + free-tier fallbacks
   data/sample_marine_data.json   seeded offline data
 frontend/src/
   App.jsx            chat UI + agent trace + evidence panel
