@@ -89,11 +89,29 @@ exit /b 0
 
 REM ---------- get the repo ----------
 echo.
+set REPO_OK=0
 if exist "%DEST%\.git" (
+  git -C "%DEST%" rev-parse --is-inside-work-tree >nul 2>nul && set REPO_OK=1
+)
+
+if "!REPO_OK!"=="1" (
   echo [repo] already downloaded - pulling latest changes
-  cd /d "%DEST%"
-  git pull
+  git -C "%DEST%" pull --ff-only
 ) else (
+  if exist "%DEST%\backend\app\main.py" (
+    echo.
+    echo [ERROR] "%DEST%"
+    echo         has project files but is not a working git checkout
+    echo         ^(a past download probably failed half-way^).
+    echo         Rename or delete that folder, then run this again.
+    echo.
+    pause
+    exit /b 1
+  )
+  if exist "%DEST%" (
+    echo [repo] removing incomplete download...
+    rmdir /s /q "%DEST%"
+  )
   echo [repo] downloading...
   git clone "%REPO_URL%" "%DEST%"
   if errorlevel 1 (
@@ -102,8 +120,16 @@ if exist "%DEST%\.git" (
     pause
     exit /b 1
   )
-  cd /d "%DEST%"
 )
+
+if not exist "%DEST%\setup.bat" (
+  echo.
+  echo [ERROR] download finished but setup.bat is missing - the clone is
+  echo         incomplete. Delete "%DEST%" and run this again.
+  pause
+  exit /b 1
+)
+cd /d "%DEST%"
 
 REM ---------- deps (hand off to setup.bat) ----------
 call "%DEST%\setup.bat" /nested

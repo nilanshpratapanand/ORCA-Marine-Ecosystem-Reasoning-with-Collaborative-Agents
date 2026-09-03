@@ -58,12 +58,22 @@ echo "[python] using: $($PY --version)"
 
 # ---------- get the repo ----------
 echo
-if [ -d "$DEST/.git" ]; then
+if [ -d "$DEST/.git" ] && git -C "$DEST" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "[repo] already there - pulling latest"
   git -C "$DEST" pull --ff-only
+elif [ -f "$DEST/backend/app/main.py" ]; then
+  echo "[ERROR] $DEST has project files but is not a working git checkout."
+  echo "        Rename or delete that folder, then run this again."
+  exit 1
 else
+  [ -e "$DEST" ] && { echo "[repo] removing incomplete download..."; rm -rf "$DEST"; }
   echo "[repo] cloning..."
   git clone "$REPO_URL" "$DEST"
+fi
+
+if [ ! -f "$DEST/setup.bat" ] && [ ! -f "$DEST/backend/requirements.txt" ]; then
+  echo "[ERROR] clone looks incomplete. Delete $DEST and run this again."
+  exit 1
 fi
 cd "$DEST"
 
