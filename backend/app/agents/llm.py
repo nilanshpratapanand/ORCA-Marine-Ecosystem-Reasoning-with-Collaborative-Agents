@@ -46,11 +46,13 @@ def _log(msg: str) -> None:
 
 
 # name -> (env_key, base_url, default_model, dialect)
+# Model names drift. If a provider 404s on its model, set <NAME>_MODEL in .env
+# to a current one (hit its /models endpoint to list). Verified working Sep 2026.
 _PROVIDERS = {
-    "groq":       ("GROQ_API_KEY",       "https://api.groq.com/openai/v1",                          "qwen/qwen3-32b",                               "openai"),
-    "cerebras":   ("CEREBRAS_API_KEY",   "https://api.cerebras.ai/v1",                              "qwen-3-32b",                                  "openai"),
+    "groq":       ("GROQ_API_KEY",       "https://api.groq.com/openai/v1",                          "qwen/qwen3.8-27b",                             "openai"),
+    "cerebras":   ("CEREBRAS_API_KEY",   "https://api.cerebras.ai/v1",                              "gpt-oss-120b",                                "openai"),
     "openrouter": ("OPENROUTER_API_KEY", "https://openrouter.ai/api/v1",                            "qwen/qwen3-32b:free",                          "openai"),
-    "gemini":     ("GEMINI_API_KEY",     "https://generativelanguage.googleapis.com/v1beta/openai", "gemini-2.0-flash",                             "openai"),
+    "gemini":     ("GEMINI_API_KEY",     "https://generativelanguage.googleapis.com/v1beta/openai", "gemini-flash-lite-latest",                     "openai"),
     "mistral":    ("MISTRAL_API_KEY",    "https://api.mistral.ai/v1",                               "mistral-small-latest",                         "openai"),
     "together":   ("TOGETHER_API_KEY",   "https://api.together.xyz/v1",                             "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free", "openai"),
     "anthropic":  ("ANTHROPIC_API_KEY",  "https://api.anthropic.com/v1",                            "claude-3-5-haiku-latest",                      "anthropic"),

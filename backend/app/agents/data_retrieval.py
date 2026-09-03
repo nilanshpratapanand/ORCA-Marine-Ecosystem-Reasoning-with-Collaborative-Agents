@@ -33,18 +33,19 @@ def load_dataset() -> dict:
 
 REGION_ALIASES = {
     "arabian_sea_kerala": [
-        "kerala", "kochi", "cochin", "kozhikode", "calicut", "kollam",
-        "malabar", "vizhinjam", "kerala coast", "kerla",
+        "kerala", "kerela", "keral", "kochi", "cochin", "kozhikode", "calicut",
+        "kollam", "malabar", "vizhinjam", "kerala coast", "kerla",
         "केरल", "कोच्चि", "கேரளா", "കേരളം",
     ],
     "bay_of_bengal_chennai": [
-        "chennai", "madras", "tamil nadu", "tamilnadu", "nagapattinam",
-        "cuddalore", "chennai coast", "coromandel", "pondicherry", "puducherry",
+        "chennai", "chenai", "madras", "tamil nadu", "tamilnadu", "tamilnad",
+        "nagapattinam", "cuddalore", "chennai coast", "coromandel",
+        "pondicherry", "puducherry",
         "चेन्नई", "तमिलनाडु", "சென்னை", "தமிழ்நாடு", "நாகப்பட்டினம்",
     ],
     "bay_of_bengal_odisha": [
-        "odisha", "orissa", "puri", "paradip", "paradeep", "gopalpur",
-        "chilika", "odisha coast", "udisha",
+        "odisha", "orissa", "odissa", "odisa", "orisa", "udisha", "udisa",
+        "puri", "paradip", "paradeep", "gopalpur", "chilika", "odisha coast",
         "ओडिशा", "ओड़िशा", "उड़ीसा", "पुरी", "ଓଡ଼ିଶା", "ଓଡିଶା",
     ],
     "arabian_sea_gujarat": [
