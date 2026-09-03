@@ -9,17 +9,23 @@ risk → reasoning) works out an evidence-backed answer with a visible trace.
 
 ## Quick start (Windows)
 
-1. Clone this repo to your Desktop.
-2. Double-click **`setup.bat`** — installs Git / Python 3.12 / Node if missing,
-   builds the backend venv, installs everything. Re-runnable.
-3. Put a free Groq key in `backend\.env` (`GROQ_API_KEY=...`, from
+**Clean PC?** Download just **`install-orca.bat`**
+([raw link](https://raw.githubusercontent.com/nilanshpratapanand/ORCA-Marine-Ecosystem-Reasoning-with-Collaborative-Agents/main/install-orca.bat))
+and double-click it. It installs Git / Python 3.12 / Node if missing, downloads
+this repo to your Desktop, sets up backend + frontend, and offers to start it.
+
+**Already have the repo?**
+
+1. Double-click **`setup.bat`** — builds the backend venv, installs everything.
+   Re-runnable.
+2. Put a free Groq key in `backend\.env` (`GROQ_API_KEY=...`, from
    https://console.groq.com/keys) — optional, the app runs without it.
-4. Double-click **`run.bat`** — starts backend + frontend.
+3. Double-click **`run.bat`** — starts backend + frontend.
 
 Backend docs: http://127.0.0.1:8000/docs · UI: http://127.0.0.1:5173
 
-Prefer doing it by hand, or on Mac/Linux? **[SETUP.md](SETUP.md)** has every
-step and a common-errors table.
+By hand, or on Mac/Linux? **[SETUP.md](SETUP.md)** has every step + a
+common-errors table.
 
 ## Docs
 
