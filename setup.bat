@@ -8,6 +8,9 @@ setlocal enabledelayedexpansion
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
 
+REM some installers add tools to disk but not to this shell's PATH
+set "PATH=%PATH%;%ProgramFiles%\Git\cmd;%ProgramFiles%\nodejs;%LOCALAPPDATA%\Programs\nodejs;%APPDATA%\npm"
+
 echo.
 echo ============================================================
 echo   ORCA dev setup

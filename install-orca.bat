@@ -20,40 +20,72 @@ echo   target folder: %DEST%
 echo ============================================================
 echo.
 
+REM Some installers put tools on disk but not on this shell's PATH. Add the
+REM usual locations up front so we don't try to "install" something that's
+REM already here (that was causing an install -> restart -> install loop).
+set "PATH=%PATH%;%ProgramFiles%\Git\cmd;%ProgramFiles%\Git\bin;%LOCALAPPDATA%\Programs\Git\cmd;%ProgramFiles%\nodejs;%LOCALAPPDATA%\Programs\nodejs;%APPDATA%\npm"
+
 set NEED_RESTART=0
+set PATH_PROBLEM=0
 
-where git >nul 2>nul
-if errorlevel 1 (
-  echo [ .. ] Git not found - installing...
-  winget install --id Git.Git -e --accept-source-agreements --accept-package-agreements
-  set NEED_RESTART=1
-) else ( echo [ ok ] Git )
+call :ensure git   "Git.Git"            "Git"
+call :ensure node  "OpenJS.NodeJS.LTS"  "Node.js"
 
+REM Python: the "py" launcher finds versions even when python.exe isn't on PATH.
 py -3.12 --version >nul 2>nul
 if errorlevel 1 (
   echo [ .. ] Python 3.12 not found - installing...
   winget install --id Python.Python.3.12 -e --accept-source-agreements --accept-package-agreements
-  set NEED_RESTART=1
+  py -3.12 --version >nul 2>nul && ( echo [ ok ] Python 3.12 ) || set NEED_RESTART=1
 ) else ( echo [ ok ] Python 3.12 )
 
-where node >nul 2>nul
-if errorlevel 1 (
-  echo [ .. ] Node.js not found - installing...
-  winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements
-  set NEED_RESTART=1
-) else ( echo [ ok ] Node.js )
+if "!PATH_PROBLEM!"=="1" (
+  echo.
+  echo ============================================================
+  echo   A tool is installed but not on your PATH, and I couldn't
+  echo   find it in the usual folders. Re-install it from the official
+  echo   site ^(the installer adds it to PATH^), then run this again:
+  echo     Git :  https://git-scm.com/download/win
+  echo     Node:  https://nodejs.org   ^(LTS^)
+  echo ============================================================
+  echo.
+  pause
+  exit /b 1
+)
 
 if "!NEED_RESTART!"=="1" (
   echo.
   echo ============================================================
-  echo   Installed missing tools. Windows needs a fresh terminal to
-  echo   see them. CLOSE this window, open a NEW one, and run
-  echo   install-orca.bat again.
+  echo   Installed missing tools. CLOSE this window, open a NEW one,
+  echo   and run install-orca.bat again so PATH refreshes.
   echo ============================================================
   echo.
   pause
   exit /b 0
 )
+
+goto :deps_done
+
+REM ---- :ensure <command> <winget-id> <label> -------------------------------
+:ensure
+where %~1 >nul 2>nul
+if not errorlevel 1 ( echo [ ok ] %~3 & exit /b 0 )
+echo [ .. ] %~3 not found - installing...
+winget install --id %~2 -e --accept-source-agreements --accept-package-agreements
+REM re-add likely paths and re-check (winget won't refresh this shell's PATH)
+set "PATH=%PATH%;%ProgramFiles%\Git\cmd;%LOCALAPPDATA%\Programs\Git\cmd;%ProgramFiles%\nodejs;%LOCALAPPDATA%\Programs\nodejs"
+where %~1 >nul 2>nul
+if not errorlevel 1 ( echo [ ok ] %~3 ^(found after install^) & exit /b 0 )
+winget list --id %~2 -e >nul 2>nul
+if not errorlevel 1 (
+  echo [warn] %~3 is installed but not on PATH
+  set PATH_PROBLEM=1
+) else (
+  set NEED_RESTART=1
+)
+exit /b 0
+
+:deps_done
 
 REM ---------- get the repo ----------
 echo.
