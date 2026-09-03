@@ -7,27 +7,19 @@ Ask a marine question in your own language; a team of collaborating AI agents
 (language → planning → data retrieval → weather/ocean analytics → geospatial →
 risk → reasoning) works out an evidence-backed answer with a visible trace.
 
-## Quick start
+## Quick start (Windows)
 
-New here? **Read [SETUP.md](SETUP.md)** — clone, install, run, in order.
-
-```
-cd backend
-py -3.12 -m venv venv
-venv\Scripts\activate
-python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --reload
-```
-
-Then in a second terminal:
-
-```
-cd frontend
-npm install
-npm run dev
-```
+1. Clone this repo to your Desktop.
+2. Double-click **`setup.bat`** — installs Git / Python 3.12 / Node if missing,
+   builds the backend venv, installs everything. Re-runnable.
+3. Put a free Groq key in `backend\.env` (`GROQ_API_KEY=...`, from
+   https://console.groq.com/keys) — optional, the app runs without it.
+4. Double-click **`run.bat`** — starts backend + frontend.
 
 Backend docs: http://127.0.0.1:8000/docs · UI: http://127.0.0.1:5173
+
+Prefer doing it by hand, or on Mac/Linux? **[SETUP.md](SETUP.md)** has every
+step and a common-errors table.
 
 ## Docs
 

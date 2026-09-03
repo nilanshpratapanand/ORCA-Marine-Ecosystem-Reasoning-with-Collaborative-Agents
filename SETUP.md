@@ -7,6 +7,10 @@ skips lines).
 **Do not skip a step. Do not run these in `C:\WINDOWS\system32`** — if your
 prompt says `system32`, you forgot the `cd` in step 1.
 
+> **Shortcut:** on Windows you can just clone the repo and double-click
+> **`setup.bat`** (then `run.bat`). This page is the manual version + the
+> troubleshooting table for when something breaks.
+
 ---
 
 ## 0. Install these first
